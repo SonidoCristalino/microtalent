@@ -1,0 +1,35 @@
+# deployment.yaml
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  # El nombre de nuestro Deployment
+  name: microtalent-app
+spec:
+  # ¿Cuántas copias idénticas de nuestra aplicación queremos? 
+  # Con 2, si una falla, la otra sigue funcionando.
+  replicas: 2
+  selector:
+    matchLabels:
+      # Esta etiqueta conecta el Deployment con los Pods (las instancias de la app).
+      # Debe coincidir con la etiqueta del Pod en la plantilla de abajo.
+      app: microtalent-app
+  template:
+    metadata:
+      labels:
+        # La etiqueta que identifica a nuestros Pods.
+        app: microtalent-app
+    spec:
+      containers:
+        # Definimos el contenedor que correrá dentro del Pod.
+        - name: microtalent-container
+          # ¡La imagen que construimos y subimos a Docker Hub!
+          image: sonidocristalino/microtalent:latest
+          ports:
+            # El puerto que expone nuestra aplicación (Apache) dentro del contenedor.
+            - containerPort: 80
+          # Aquí está la magia: inyectamos las variables de entorno
+          # directamente desde el Secreto que creamos en el paso anterior.
+          envFrom:
+            - secretRef:
+                name: db-credentials

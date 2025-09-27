@@ -1,0 +1,22 @@
+# service.yaml
+
+apiVersion: v1
+kind: Service
+metadata:
+  # El nombre de nuestro Service
+  name: microtalent-service
+spec:
+  # 'LoadBalancer' es el tipo de servicio que le pide a AWS
+  # que cree un Balanceador de Carga de Red real para exponer nuestra app.
+  type: LoadBalancer
+  selector:
+    # Esta es la parte más importante: el Service busca todos los Pods
+    # que tengan la etiqueta 'app: microtalent-app' y les envía tráfico.
+    # Debe coincidir con la etiqueta del Deployment.
+    app: microtalent-app
+  ports:
+    - protocol: TCP
+      # El puerto 80 es el puerto público del balanceador de carga.
+      port: 80
+      # El 'targetPort' es el puerto al que se enviará el tráfico dentro del contenedor (el puerto 80 de Apache).
+      targetPort: 80
